@@ -19,5 +19,21 @@ module MoviesHelper
   		return t_movie.title.to_s
   	end
   end
-  
+
+  def rating_picker(t_movie)
+  	if (params[:ratings] != nil)
+  		return params[:ratings].has_key?(t_movie.rating)
+  	else
+  		return true
+  	end
+  end
+
+  def rating_check(t_rating)
+  	if (params[:ratings] != nil)
+  		return params[:ratings].has_key?(t_rating)
+  	else
+  		return true
+  	end
+  end
+
 end
