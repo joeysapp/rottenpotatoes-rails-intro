@@ -11,8 +11,39 @@ class MoviesController < ApplicationController
   end
 
   def index
+
     @movies = Movie.all
+    @redirect = 0
+
+    if (@seen_client != nil)
+      @movies = @movies.find_all{|m| @seen_client[m.rating] == true and @seen_client.has_key?(m.rating) }
+    end
+
+    if (params[:sort].to_s == 'title')
+      # watched a youtube video for this.. not entirely sure what's going on here
+      session[:sort] = params[:sort]
+      @movies = @movies.sort_by{|m| m.relase_date.to_s }
+    elsif (session.has_key?(:sort) )
+      # flipped if we've seen it
+      params[:sort] = session[:sort]
+      @redirect = 1
+    end
+
+    if (params[:ratings] != nil)
+      session[:ratings] = params[:ratings]
+      @movies = @movies.find_all{|m| params[:ratings].has_key?(m.rating) }
+    elsif (session.has_key?(:ratings))
+      params[:ratings] = session[:ratings]
+      @redirect = 1
+    end
+
+    if (@redirect == 1)
+      redirect_to movies_path(:sort=>params[:sort], :ratings=>params[:ratings])
+    end
+
     @all_ratings = ['G', 'PG', 'PG-13', 'R']
+    @seen_client = {}
+
   end
 
   def new
